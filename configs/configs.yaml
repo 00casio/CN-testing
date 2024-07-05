@@ -1,0 +1,9 @@
+amf:
+  ip: 192.168.71.132 
+  url: 'http://oai-amf' 
+  port: 80            
+
+smf:
+  ip: 192.168.71.133
+  url: 'http://oai-smf'
+  port: 80      

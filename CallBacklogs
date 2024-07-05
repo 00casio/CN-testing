@@ -1,0 +1,16 @@
+achraf@NOCTUELLE:~/Desktop/Hamza_stage$ /bin/python3 /home/achraf/Desktop/Hamza_stage/sdk/src/main/handler.py
+INFO:__main__:Successfully connected to MongoDB.
+INFO:__main__:Collections cleaned.
+INFO:__main__:Subscribing to Registration Events from AMF
+http://192.168.71.132:80/namf-evts/v1/subscriptions/2
+INFO:__main__:Subscribing to User Sessions Events from SMF
+ * Serving Flask app 'handler' (lazy loading)
+ * Environment: production
+   WARNING: This is a development server. Do not use it in a production deployment.
+   Use a production WSGI server instead.
+ * Debug mode: off
+INFO:werkzeug: * Running on http://192.168.71.129:1112/ (Press CTRL+C to quit)
+DEBUG:__main__:{'notifyCorrelationId': 'c78c63c6-3aba-11ef-906c-25248c51a11f', 'reportList': [{'amfUeNgapId': 2, 'ranUeNgapId': 1, 'rmInfoList': [{'accessType': '3GPP_ACCESS', 'rmState': 'REGISTERED'}], 'state': {'active': True}, 'supi': 'imsi-208990100001100', 'timeStamp': 1720175970, 'type': 'REGISTRATION_STATE_REPORT'}]}
+INFO:werkzeug:192.168.71.132 - - [05/Jul/2024 12:39:31] "POST /callbacks/amf-reports HTTP/1.1" 200 -
+DEBUG:__main__:{'notifyCorrelationId': 'c78c63c6-3aba-11ef-906c-25248c51a11f', 'reportList': [{'amfUeNgapId': 2, 'ranUeNgapId': 1, 'rmInfoList': [{'accessType': '3GPP_ACCESS', 'rmState': 'DEREGISTERED'}], 'state': {'active': True}, 'supi': 'imsi-208990100001100', 'timeStamp': 1720176090, 'type': 'REGISTRATION_STATE_REPORT'}]}
+INFO:werkzeug:192.168.71.132 - - [05/Jul/2024 12:41:30] "POST /callbacks/amf-reports HTTP/1.1" 200 -
