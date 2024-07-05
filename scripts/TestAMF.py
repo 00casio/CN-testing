@@ -6,8 +6,6 @@ sys.path.insert(0, parent_dir)
 import yaml
 from utils import load_config
 
-
-
 def modifyAmfSubscription(amf_ip, amf_port, subscription_id,amf_url='/namf-evts/v1',new_nfid=None,new_notify_uri=None):
     url = f"http://{amf_ip}:{amf_port}{amf_url}/subscriptions/{subscription_id}"
     sub_body = {
