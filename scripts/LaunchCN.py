@@ -20,7 +20,7 @@ def run_command(command):
 
 # Set up paths
 try:
-    parent_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), '../..'))
+    parent_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
     sys.path.insert(0, parent_dir)
 
     home_dir = os.path.expanduser("~")
