@@ -18,21 +18,25 @@ def run_command(command):
     else:
         logger.info(f"Command succeeded: {result.stdout}")
 
-# Set up paths
 try:
-    parent_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
-    sys.path.insert(0, parent_dir)
-
-    home_dir = os.path.expanduser("~")
-    directory = os.path.join(home_dir, 'openairinterface5g-develop', 'ci-scripts', 'yaml_files', '5g_rfsimulator')
+    # Get the parent directory of the current script file
+    current_dir = os.path.dirname(os.path.abspath(__file__))
+    
+    # Navigate two folders back to reach the desired directory
+    directory = os.path.abspath(os.path.join(current_dir, '..','5g_rfsimulator'))
+    parentdir= os.path.abspath(os.path.join(current_dir, '..','..'))
+    
+    # Change the current working directory to the desired directory
     os.chdir(directory)
+    logger.info(f"Changed current working directory to: {directory}")
+    
 except Exception as e:
     logger.error(f"Error setting up paths or importing modules: {e}")
     raise
 
 # Construct the path to handler.py
-handler_dir = os.path.abspath(os.path.join(parent_dir, 'sdk/src/main'))
-handler_path = os.path.join(handler_dir, 'handler.py')
+# handler_dir = os.path.abspath(os.path.join(parentdir, 'sdk/src/main'))
+# handler_path = os.path.join(handler_dir, 'handler.py')
 
 # List of docker commands
 commands = [
