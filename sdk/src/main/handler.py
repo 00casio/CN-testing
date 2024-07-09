@@ -65,9 +65,9 @@ changed_status_dict = {}
 app = Flask(__name__)
 logging.basicConfig(level=logging.INFO)
 log = logging.getLogger(__name__)
-logging.getLogger('pymongo').setLevel(logging.DEBUG)
-logging.getLogger("docker.utils.config").setLevel(logging.DEBUG)
-logging.getLogger("urllib3.connectionpool").setLevel(logging.DEBUG)
+logging.getLogger('pymongo').setLevel(logging.INFO)
+logging.getLogger("docker.utils.config").setLevel(logging.INFO)
+logging.getLogger("urllib3.connectionpool").setLevel(logging.INFO)
 logging.getLogger('werkzeug').setLevel(logging.DEBUG)
 
 

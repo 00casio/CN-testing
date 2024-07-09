@@ -54,4 +54,4 @@ def stop_handler():
             logger.info("No handler process running.")
     except (psutil.NoSuchProcess, psutil.AccessDenied, psutil.ZombieProcess) as e:
         logger.error(f"Failed to terminate handler.py: {e}")
-
+start_handler()

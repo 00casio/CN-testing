@@ -38,4 +38,4 @@ def deleteAmfSubscription(amf_ip, amf_port, subscription_id,amf_url='/namf-evts/
     except Exception as e:
         return {"error": "exception", "message": str(e)}
 configs = load_config("/home/foreur/Documents/Hamza_stage/CN-Testing/configs/configs.yaml")
-print(modifyAmfSubscription(amf_ip = configs["amf"]["ip"],amf_port = configs["amf"]["port"],subscription_id='2'))
+# print(modifyAmfSubscription(amf_ip = configs["amf"]["ip"],amf_port = configs["amf"]["port"],subscription_id='2'))
