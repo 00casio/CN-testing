@@ -2,7 +2,7 @@ import os
 import subprocess
 import logging
 import docker
-
+import sys
 
 def add_ues(nb_ues):
     """
@@ -33,8 +33,10 @@ def add_ues(nb_ues):
     existing_containers = [str(container.name) for container in containers]
     
     try:
-        home_dir = os.path.expanduser("~")
-        directory = os.path.join(home_dir, 'openairinterface5g-develop', 'ci-scripts', 'yaml_files', '5g_rfsimulator')
+        parent_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), '../../..'))
+        print(parent_dir)
+        sys.path.insert(0, parent_dir)  
+        directory = os.path.join(parent_dir, '5g_rfsimulator')
         assert os.path.isdir(directory), "The required directory does not exist"
         os.chdir(directory)
         
@@ -105,5 +107,3 @@ def remove_ues(nb_ues):
 
     except AssertionError as error:
         logger.error(error)
-
-
