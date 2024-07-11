@@ -4,3 +4,4 @@ docker
 multiprocess
 pymongo
 psutil
+flask
