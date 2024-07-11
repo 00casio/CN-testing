@@ -34,7 +34,6 @@ def add_ues(nb_ues):
     
     try:
         parent_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), '../../..'))
-        print(parent_dir)
         sys.path.insert(0, parent_dir)  
         directory = os.path.join(parent_dir, '5g_rfsimulator')
         assert os.path.isdir(directory), "The required directory does not exist"
