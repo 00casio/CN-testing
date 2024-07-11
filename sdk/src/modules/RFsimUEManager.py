@@ -33,7 +33,7 @@ def add_ues(nb_ues):
     existing_containers = [str(container.name) for container in containers]
     
     try:
-        parent_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), '../..'))
+        parent_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), '../../..'))
         print(parent_dir)
         sys.path.insert(0, parent_dir)  
         directory = os.path.join(parent_dir, '5g_rfsimulator')
@@ -107,5 +107,3 @@ def remove_ues(nb_ues):
 
     except AssertionError as error:
         logger.error(error)
-
-
