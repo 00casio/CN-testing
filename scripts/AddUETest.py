@@ -100,10 +100,14 @@ if __name__ == "__main__":
     check_imsi_match(docker_yaml_path, nb_of_users)
 
     time.sleep(3)
-    remove_ues(nb_of_users)
+    try:
+        remove_ues(nb_of_users)
+    except Exception as e:
+        logger.error(f"Failed to stop handler: {e}")
+        sys.exit(1)
     time.sleep(3)
+    
     logger.info("Stopping handler...")
-
     try:
         stop_handler()
     except Exception as e:
