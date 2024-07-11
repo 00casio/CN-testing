@@ -95,7 +95,7 @@ if __name__ == "__main__":
             logger.error(f"Failed to add UEs: {e}")
             sys.exit(1)
         
-    time.sleep(20)
+    time.sleep(10)
     docker_yaml_path = os.path.join(parent_dir, '5g_rfsimulator', 'docker-compose.yaml')
     check_imsi_match(docker_yaml_path, nb_of_users)
 
