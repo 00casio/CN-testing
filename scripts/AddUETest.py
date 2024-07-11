@@ -6,7 +6,9 @@ import time
 import yaml
 from pymongo import MongoClient
 parent_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
+print(parent_dir)
 sys.path.insert(0, parent_dir)
+time.sleep(10)
 from sdk.src.modules.RFsimUEManager import add_ues, remove_ues
 from sdk.src.main.init_handler import start_handler, stop_handler
 
