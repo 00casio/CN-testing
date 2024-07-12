@@ -33,24 +33,29 @@ def extract_imsi_from_docker_yaml(docker_yaml_path):
         sys.exit(-1)
 
 def get_imsi_from_handler_collection():
-    logging.getLogger('pymongo').setLevel(logging.INFO)
-    client = MongoClient('mongodb://localhost:27017/')
-    db = client['notification_db']
-    amf_collection = db['amf_notifications']
-    latest_imsi_events = {}
-    for document in amf_collection.find():
-        for report in document["reportList"]:
-            supi = report["supi"]
-            rm_state = report["rmInfoList"][0]["rmState"]
-            timestamp = report["timeStamp"]
-            if supi.startswith("imsi-"):
-                supi = supi[5:]
-            if supi not in latest_imsi_events or timestamp > latest_imsi_events[supi]['timestamp']:
-                latest_imsi_events[supi] = {'rm_state': rm_state, 'timestamp': timestamp}
-    latest_registered_imsis = [
-        imsi for imsi, event in latest_imsi_events.items()
-        if event['rm_state'] == "REGISTERED"]
-    return latest_registered_imsis
+    try:
+        logging.getLogger('pymongo').setLevel(logging.INFO)
+        client = MongoClient('mongodb://localhost:27017/')
+        db = client['notification_db']
+        amf_collection = db['amf_notifications']
+        latest_imsi_events = {}
+        for document in amf_collection.find():
+            for report in document["reportList"]:
+                supi = report["supi"]
+                rm_state = report["rmInfoList"][0]["rmState"]
+                timestamp = report["timeStamp"]
+                if supi.startswith("imsi-"):
+                    supi = supi[5:]
+                if supi not in latest_imsi_events or timestamp > latest_imsi_events[supi]['timestamp']:
+                    latest_imsi_events[supi] = {'rm_state': rm_state, 'timestamp': timestamp}
+        latest_registered_imsis = [
+            imsi for imsi, event in latest_imsi_events.items()
+            if event['rm_state'] == "REGISTERED"]
+        return latest_registered_imsis
+    except Exception as e:
+        logger.error(f"Failed to get IMSIs from handler collection: {e}")
+        stop_handler()
+        sys.exit(-1)
 
 def check_imsi_match(docker_yaml_path,nb_of_users):
     imsi_from_yaml = extract_imsi_from_docker_yaml(docker_yaml_path)[:nb_of_users]
