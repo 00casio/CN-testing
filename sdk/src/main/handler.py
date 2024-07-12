@@ -40,6 +40,7 @@ import importlib
 import yaml
 from yaml.loader import SafeLoader
 
+testing = True
 current_dir = os.path.dirname(os.path.abspath(__file__))
 parent_dir = os.path.dirname(os.path.dirname(current_dir))
 config_file_path = os.path.join(parent_dir, 'etc', 'configuration.yaml')
@@ -228,7 +229,9 @@ def receive_amf_notification():
         importlib.reload(callbacks)
         handle_registered_ue_callbacks()
         handle_changed_status_callbacks()
-
+        if testing and request.status_code != 200:
+            log.error("Received non-200 response: %s", request.status_code)
+            sys.exit(-1)
     return "OK"
 
 
@@ -239,7 +242,9 @@ def receive_smf_notification():
         content = request.get_json(force=True)
         log.debug(content)
         smf_collection.insert_one(content)
-
+        if testing and request.status_code != 200:
+            log.error("Received non-200 response: %s", request.status_code)
+            sys.exit(-1)
     return "OK"
 
 app.config["DEBUG"] = False
