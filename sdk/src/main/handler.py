@@ -204,8 +204,8 @@ def handle_changed_status_callbacks():
             if status['rmState_amf'] != changed_status_dict[supi]['rmState_amf']:
                 temp_dict = {supi: status}
 
-                home_dir = os.path.expanduser("~")
-                events_json_path = os.path.join(home_dir, '5gcsdk', 'src', 'modules', 'events.json')
+                current_dir = os.path.dirname(os.path.abspath(__file__))
+                events_json_path = os.path.join(current_dir, '../modules/events.json')
 
                 with open(events_json_path, 'r') as json_file:
                     data = json.load(json_file)
