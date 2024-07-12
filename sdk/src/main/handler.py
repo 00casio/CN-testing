@@ -167,8 +167,7 @@ def connected_ues():
 
 # handle the callbacks for registered UEs
 def handle_registered_ue_callbacks():
-    home_dir = os.path.expanduser("~")
-    events_json_path = os.path.join(home_dir, '5gcsdk', 'src', 'modules', 'events.json')
+    events_json_path = os.path.join(current_dir, '../modules/events.json')
     with open(events_json_path, 'r') as json_file:
         data = json.load(json_file)
     registered_users = connected_ues()
