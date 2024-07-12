@@ -167,6 +167,7 @@ def connected_ues():
 
 # handle the callbacks for registered UEs
 def handle_registered_ue_callbacks():
+    current_dir = os.path.dirname(os.path.abspath(__file__))
     events_json_path = os.path.join(current_dir, '../modules/events.json')
     with open(events_json_path, 'r') as json_file:
         data = json.load(json_file)
