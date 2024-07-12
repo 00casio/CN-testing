@@ -30,7 +30,7 @@ def extract_imsi_from_docker_yaml(docker_yaml_path):
         return imsis
     else:
         logger.error("No IMSIs found in Docker YAML file")
-        sys.exit(1)
+        sys.exit(-1)
 
 def get_imsi_from_handler_collection():
     logging.getLogger('pymongo').setLevel(logging.INFO)
@@ -61,7 +61,7 @@ def check_imsi_match(docker_yaml_path,nb_of_users):
         logger.error(f"IMSI mismatch. Docker YAML IMSI: {imsi_from_yaml}, Handler IMSI: {imsi_from_handler}")
         remove_ues(nb_of_users)
         stop_handler()
-        sys.exit(1)
+        sys.exit(-1)
 
 def add_ues_process():
     try:
@@ -70,7 +70,7 @@ def add_ues_process():
     except Exception as e:
         logger.error(f"Core network is not healthy. UEs were not added: {e}")
         stop_handler()
-        sys.exit(1)
+        sys.exit(-1)
 
 if __name__ == "__main__":
     add_ues_process()
@@ -93,7 +93,7 @@ if __name__ == "__main__":
             time.sleep(5)
         except Exception as e:
             logger.error(f"Failed to add UEs: {e}")
-            sys.exit(1)
+            sys.exit(-1)
         
     time.sleep(10)
     docker_yaml_path = os.path.join(parent_dir, '5g_rfsimulator', 'docker-compose.yaml')
@@ -104,7 +104,7 @@ if __name__ == "__main__":
         remove_ues(nb_of_users)
     except Exception as e:
         logger.error(f"Failed to stop handler: {e}")
-        sys.exit(1)
+        sys.exit(-1)
     time.sleep(3)
     
     logger.info("Stopping handler...")
@@ -112,7 +112,7 @@ if __name__ == "__main__":
         stop_handler()
     except Exception as e:
         logger.error(f"Failed to stop handler: {e}")
-        sys.exit(1)
+        sys.exit(-1)
         
     logger.info("Handler stopped.")
     sys.exit(0)
