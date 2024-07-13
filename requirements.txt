@@ -5,3 +5,9 @@ multiprocess
 pymongo
 psutil
 flask
+robotframework-pabot
+robotframework-seleniumlibrary
+robotframework-requests
+robotframework
+robotframework-jsonlibrary
+robotframework-yamllibrary
