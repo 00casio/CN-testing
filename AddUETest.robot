@@ -31,7 +31,7 @@ Add Multiple UEs
     END
 
 Check IMSI Match
-    [Documentation]    Check if IMSIs in Docker YAML match those in handler
+    [Documentation]    Check the REGIATRATION of UEs 
     AddUETest.check_imsi_match    ${DOCKER_YAML_PATH}    ${nb_of_users}
 
 Final Remove UEs
