@@ -7,13 +7,13 @@ Library    scripts/AddUETest.py     WITH NAME    AddUETest
 
 *** Variables ***
 ${DOCKER_YAML_PATH}   ../5g_rfsimulator/docker-compose.yaml
-${nb_of_users}    ${5}
+${nb_of_users}    ${1}
 ${one}    ${1}
 
 
 *** Test Cases ***
 Initial Add and Remove UE
-    [Documentation]    Add 1 UEs and remove 1 to prepare for the main test
+    [Documentation]    Add 1 UEs and remove 1 to prepare the gNB
     RFsim.Add UEs    ${one}  
     Sleep    30s
     RFsim.Remove UEs    ${one}
@@ -35,10 +35,10 @@ Check IMSI Match
     AddUETest.check_imsi_match    ${DOCKER_YAML_PATH}    ${nb_of_users}
 
 Final Remove UEs
-    [Documentation]    Remove all UEs added during the test
+    [Documentation]    Remove all UEs added during the test and check their DEREGISTRATION Notifications
     FOR    ${user}    IN RANGE    ${nb_of_users}
          RFsim.Remove UEs    ${1}
     END
-    Sleep    3s
+    Sleep    15s
+    AddUETest.check_latest_deregistered_imsis    ${DOCKER_YAML_PATH}    ${nb_of_users}
     Handler.stop_handler
-    

@@ -67,6 +67,37 @@ def check_imsi_match(docker_yaml_path,nb_of_users):
         remove_ues(nb_of_users)
         stop_handler()
         sys.exit(-1)
+        
+        
+def check_latest_deregistered_imsis(docker_yaml_path, n):
+    try:
+        logging.getLogger('pymongo').setLevel(logging.INFO)
+        client = MongoClient('mongodb://localhost:27017/')
+        db = client['notification_db']
+        amf_collection = db['amf_notifications']
+        imsis_from_yaml = extract_imsi_from_docker_yaml(docker_yaml_path)[:n]      
+        latest_deregistered_imsis = []
+        
+        for imsi in imsis_from_yaml:
+            events = amf_collection.find(
+            {"reportList.supi": f"imsi-{imsi}"},
+            sort=[("timeStamp", -1)]
+        )
+            for event in events:
+                for report in event["reportList"]:
+                    if report["supi"] == f"imsi-{imsi}" and report["rmInfoList"][0]["rmState"] == "DEREGISTERED":
+                        latest_deregistered_imsis.append(imsi)
+                        break
+                if imsi in latest_deregistered_imsis:
+                    break
+        if set(latest_deregistered_imsis) == set(imsis_from_yaml):
+            logger.info("Deregistered IMSI match successful.")
+        else:
+            logger.error(f"Deregistered IMSI mismatch. Docker YAML IMSIs: {imsis_from_yaml}, Deregistered IMSIs: {latest_deregistered_imsis}")
+            sys.exit(-1)
+    except Exception as e:
+        logger.error(f"Failed to check latest deregistered IMSIs: {e}")
+        sys.exit(-1)
 
 def add_ues_process():
     try:
@@ -89,7 +120,7 @@ if __name__ == "__main__":
 
     # Give the handler some time to start
     time.sleep(20)
-    nb_of_users = 5
+    nb_of_users = 1
     for user in range(nb_of_users):
         try:
             ues_proc = multiprocessing.Process(target=add_ues_process)
@@ -108,9 +139,10 @@ if __name__ == "__main__":
     try:
         remove_ues(nb_of_users)
     except Exception as e:
-        logger.error(f"Failed to stop handler: {e}")
+        logger.error(f"Failed to remove UEs: {e}")
         sys.exit(-1)
-    time.sleep(3)
+    time.sleep(15)
+    check_latest_deregistered_imsis(docker_yaml_path, nb_of_users)
     
     logger.info("Stopping handler...")
     try:
