@@ -1,7 +1,7 @@
 *** Settings ***
-Library    JSONLibrary
-Library    sdk/src/modules/RFsimUEManager.py    WITH NAME    RFsim
-Library    sdk/src/main/init_handler.py    WITH NAME    Handler
+Library    OperatingSystem
+Library    5gcsdk/src/modules/RFsimUEManager.py    WITH NAME    RFsim
+Library    5gcsdk/src/main/init_handler.py    WITH NAME    Handler
 Library    scripts/AddUETest.py     WITH NAME    AddUETest
 
 
@@ -15,11 +15,13 @@ ${one}    ${1}
 Initial Add and Remove UE
     [Documentation]    Add 1 UEs and remove 1 to prepare the gNB
     RFsim.Add UEs    ${one}  
-    Sleep    30s
+    Sleep    10s
     RFsim.Remove UEs    ${one}
 
 Start Handler
     [Documentation]    Start the handler and wait for it to initialize
+    ${result}    Run    systemctl is-active mongod
+    Should Not Contain    ${result}    inactive
     Handler.start_handler
     Sleep    5s
 
