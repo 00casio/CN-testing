@@ -37,8 +37,11 @@ def stop_handler():
         with open(status_file_path, 'r') as file:
             data = yaml.safe_load(file)
 
-        handler_pid = int(data.get('handler_pid'))  
-
+        if data.get('handler_pid') != 'None':
+            handler_pid = int(data.get('handler_pid'))
+        else:
+            handler_pid =  None
+        
         if handler_pid is not None:
             proc = psutil.Process(handler_pid)
             logger.debug(f"Command line of the process: {proc.cmdline()}")
