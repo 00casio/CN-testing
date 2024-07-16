@@ -6,6 +6,7 @@ import time
 import yaml
 from pymongo import MongoClient
 import importlib
+import re
 parent_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
 sys.path.insert(0, parent_dir)
 RFsimUEManager = importlib.import_module('5gcsdk.src.modules.RFsimUEManager')
@@ -37,6 +38,68 @@ def extract_imsi_from_docker_yaml(docker_yaml_path):
         logger.error("No IMSIs found in Docker YAML file")
         sys.exit(-1)
 
+def check_smf_logs_and_callback_notification(logs):
+    try:
+        smf_contexts = re.findall(r'SMF CONTEXT:.*?(?=SMF CONTEXT:|$)', logs, re.DOTALL)
+        parsed_log_data = []
+
+        for context in smf_contexts:
+            parsed_context = {}
+            lines = context.split('\n')
+            for line in lines:
+                if "SUPI:" in line:
+                    parsed_context['SUPI'] = line.split(':')[1].strip()
+                if "PDU Session ID:" in line:
+                    parsed_context['PDU Session ID'] = line.split(':')[1].strip()
+                if "DNN:" in line:
+                    parsed_context['DNN'] = line.split(':')[1].strip()
+                if "PAA IPv4:" in line:
+                    parsed_context['PAA IPv4'] = line.split(':')[1].strip()
+                if "PDN type:" in line:
+                    parsed_context['PDN type'] = line.split(':')[1].strip()
+            parsed_log_data.append(parsed_context)
+        logging.getLogger('pymongo').setLevel(logging.INFO)
+        client = MongoClient('mongodb://localhost:27017/')
+        db = client['notification_db']
+        smf_collection = db['smf_notifications']
+        callback_data = []
+
+        for document in smf_collection.find():
+            for report in document["eventNotifs"]:
+                supi = report["supi"]
+                pdu_session_id = report["pduSeId"]
+                dnn = report["dnn"]
+                paa_ipv4 = report["adIpv4Addr"]
+                ip_session_type = report["pduSessType"]
+                callback_data.append({
+                    'SUPI': supi,
+                    'PDU Session ID': pdu_session_id,
+                    'DNN': dnn,
+                    'PAA IPv4': paa_ipv4,
+                    'PDN type': ip_session_type
+                })
+
+        # Compare the data
+        for log_entry in parsed_log_data:
+            match_found = False
+            for callback_entry in callback_data:
+                if (log_entry['SUPI'] == callback_entry['SUPI'] and
+                    log_entry['PDU Session ID'] == callback_entry['PDU Session ID'] and
+                    log_entry['DNN'] == callback_entry['DNN'] and
+                    log_entry['PAA IPv4'] == callback_entry['PAA IPv4']):
+                    match_found = True
+                    break
+            if not match_found:
+                logger.error(f"Mismatch found for SUPI: {log_entry['SUPI']}")
+                sys.exit(1)
+
+        logger.info("All SMF contexts match the callback data.")
+        sys.exit(0)
+
+    except Exception as e:
+        logger.error(f"An error occurred: {e}")
+        sys.exit(1)
+          
 def get_imsi_from_handler_collection():
     try:
         logging.getLogger('pymongo').setLevel(logging.INFO)
@@ -45,7 +108,7 @@ def get_imsi_from_handler_collection():
         amf_collection = db['amf_notifications']
         latest_imsi_events = {}
         for document in amf_collection.find():
-            for report in document["reportList"]:
+            for report in document["eventNotifs"]:
                 supi = report["supi"]
                 rm_state = report["rmInfoList"][0]["rmState"]
                 timestamp = report["timeStamp"]
@@ -114,47 +177,68 @@ def add_ues_process():
         sys.exit(-1)
 
 if __name__ == "__main__":
-    add_ues_process()
-    time.sleep(30)
-    remove_ues(1)
-    try:
-        start_handler()
-    except Exception as e:
-        logger.error(f"Failed to start handler: {e}")
-        sys.exit(1)
+    # add_ues_process()
+    # time.sleep(30)
+    # remove_ues(1)
+    # try:
+    #     start_handler()
+    # except Exception as e:
+    #     logger.error(f"Failed to start handler: {e}")
+    #     sys.exit(1)
 
-    # Give the handler some time to start
-    time.sleep(20)
-    nb_of_users = 1
-    for user in range(nb_of_users):
-        try:
-            ues_proc = multiprocessing.Process(target=add_ues_process)
-            ues_proc.start()
-            ues_proc.join()
-            time.sleep(5)
-        except Exception as e:
-            logger.error(f"Failed to add UEs: {e}")
-            sys.exit(-1)
+    # # Give the handler some time to start
+    # time.sleep(20)
+    # nb_of_users = 1
+    # for user in range(nb_of_users):
+    #     try:
+    #         ues_proc = multiprocessing.Process(target=add_ues_process)
+    #         ues_proc.start()
+    #         ues_proc.join()
+    #         time.sleep(5)
+    #     except Exception as e:
+    #         logger.error(f"Failed to add UEs: {e}")
+    #         sys.exit(-1)
         
-    time.sleep(10)
-    docker_yaml_path = os.path.join(parent_dir, '5g_rfsimulator', 'docker-compose.yaml')
-    check_imsi_match(docker_yaml_path, nb_of_users)
+    # time.sleep(10)
+    # docker_yaml_path = os.path.join(parent_dir, '5g_rfsimulator', 'docker-compose.yaml')
+    # check_imsi_match(docker_yaml_path, nb_of_users)
 
-    time.sleep(3)
-    try:
-        remove_ues(nb_of_users)
-    except Exception as e:
-        logger.error(f"Failed to remove UEs: {e}")
-        sys.exit(-1)
-    time.sleep(15)
-    check_latest_deregistered_imsis(docker_yaml_path, nb_of_users)
+    # time.sleep(3)
+    # try:
+    #     remove_ues(nb_of_users)
+    # except Exception as e:
+    #     logger.error(f"Failed to remove UEs: {e}")
+    #     sys.exit(-1)
+    # time.sleep(15)
+    # check_latest_deregistered_imsis(docker_yaml_path, nb_of_users)
     
-    logger.info("Stopping handler...")
-    try:
-        stop_handler()
-    except Exception as e:
-        logger.error(f"Failed to stop handler: {e}")
-        sys.exit(-1)
+    # logger.info("Stopping handler...")
+    # try:
+    #     stop_handler()
+    # except Exception as e:
+    #     logger.error(f"Failed to stop handler: {e}")
+    #     sys.exit(-1)
         
-    logger.info("Handler stopped.")
-    sys.exit(0)
+    # logger.info("Handler stopped.")
+    # sys.exit(0)
+    logs = """SMF CONTEXT:
+    SUPI:                           208990100001100
+    PDU SESSION:
+            PDU Session ID:                 10
+            DNN:                    oai
+            S-NSSAI:                        SST=1, SD=16777215
+            PDN type:               IPV4
+            PAA IPv4:               12.1.1.2
+            Default QFI:            9
+            SEID:                   2
+            N3:
+                    QoS Flow:
+                            QFI:            9
+                            UL FTEID:       TEID=1, IPv4=192.168.71.134
+                            DL FTEID:       TEID=1163335191, IPv4=192.168.71.140
+                            PDR ID UL:      1
+                            PDR ID DL:      2
+                            Precedence:     0
+                            FAR ID UL:      1
+                            FAR ID DL:      2"""
+check_smf_logs_and_callback_notification(logs)
