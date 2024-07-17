@@ -1,0 +1,34 @@
+docker logs rfsim5g-oai-smf | sed -n '/SMF CONTEXT:/,/^[[:space:]]*$/p'
+
+
+
+{'eventNotifs': 
+[{  'adIpv4Addr': '12.1.1.2', 
+    'dnn': 'oai', 
+    'event': 'PDU_SES_EST', 
+    'pduSeId': 10, 
+    'pduSessType': 'IPV4', 
+    'snssai': {'sd': '16777215', 'sst': 1}, 
+    'supi': '208990100001100', 
+    'timeStamp': '3930125973'}], 
+    'notifId': 'c7f91e0c-4378-11ef-9ae6-61823d1f6e6d'}
+
+    SUPI:                           208990100001100
+PDU SESSION:
+        PDU Session ID:                 10
+        DNN:                    oai
+        S-NSSAI:                        SST=1, SD=16777215
+        PDN type:               IPV4
+        PAA IPv4:               12.1.1.2
+        Default QFI:            9
+        SEID:                   2
+        N3:
+                QoS Flow:
+                        QFI:            9
+                        UL FTEID:       TEID=1, IPv4=192.168.71.134
+                        DL FTEID:       TEID=1163335191, IPv4=192.168.71.140
+                        PDR ID UL:      1
+                        PDR ID DL:      2
+                        Precedence:     0
+                        FAR ID UL:      1
+                        FAR ID DL:      2

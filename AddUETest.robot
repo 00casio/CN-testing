@@ -12,27 +12,25 @@ ${one}    ${1}
 
 
 *** Test Cases ***
-Start Handler
+Check AMF Registration Notifications
     [Documentation]    Check MongoDB Status, Start the handler and wait for it to initialize, check Callback registration notification
-    RFsim.Add UEs    ${one}  
-    Sleep    10s
-    RFsim.Remove UEs    ${one}
-    RFsim.Add UEs    ${one}  
-    Sleep    10s
-    RFsim.Remove UEs    ${one}
     ${result}    Run    systemctl is-active mongod
     Should Not Contain    ${result}    inactive
     Run Keyword If    '${result}' == 'active'    Log    MongoDB is active
     ...    ELSE    Log    MongoDB is not active
     Handler.start_handler
-    Sleep    5s
+    Sleep    10s
     FOR    ${user}    IN RANGE    ${nb_of_users}
          RFsim.Add UEs    ${1}
          Sleep    15s
     END
     AddUETest.check_imsi_match    ${DOCKER_YAML_PATH}    ${nb_of_users}
 
-Final Remove UEs
+Check SMF Notifications:
+     ${logs}    Run    docker logs rfsim5g-oai-smf | sed -n '/SMF CONTEXT:/,/^[[:space:]]*$/p' 
+     AddUETest.check_smf_logs_and_callback_notification    '${logs}'
+
+Check AMF Deregistration Notification
     [Documentation]    Remove all UEs added during the test and check their DEREGISTRATION Notifications
     ${result1}    Run    systemctl is-active mongod
     Should Not Contain    ${result1}    inactive
