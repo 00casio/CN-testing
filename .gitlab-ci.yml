@@ -6,7 +6,7 @@ stages:
 
 build:
   tags:
-    - useless
+    - my-runner
   stage: build 
   script: 
     - ls
