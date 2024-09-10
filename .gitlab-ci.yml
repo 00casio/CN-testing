@@ -7,11 +7,11 @@ stages:
 build:
   stage: build 
   script: 
-    - minikube start
+    - ls
 test:
   stage: test
   script:
     - whoami
     # Ensure kubeconfig is available for the cluster
     - echo "Namespace already exists"  # Create namespace if it doesn't exist
-    - minikube delete
+    - ls
