@@ -5,6 +5,8 @@ stages:
 
 
 build:
+  tags:
+    - useless
   stage: build 
   script: 
     - ls
