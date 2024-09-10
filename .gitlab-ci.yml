@@ -1,0 +1,40 @@
+stages:
+  - build
+  - test
+  - config
+
+variables:
+  IMAGE_TAG: "cism:latest"  # Tag for the Docker image
+  KUBECONFIG: "/root/.kube/config"
+
+before_script:
+  - echo "$CI_REGISTRY_PASSWORD" | docker login -u "$CI_REGISTRY_USER" --password-stdin "$CI_REGISTRY"
+
+build:
+  stage: build
+  script:
+    - docker build -t $IMAGE_TAG -f docker/Dockerfile --no-cache .  # Build the Docker image
+    - docker push $CI_REGISTRY_IMAGE:$CI_COMMIT_REF_SLUG  # Optional if you need to push the image to registry
+  only:
+    - merge_requests  # Run for merge requests only
+
+test:
+  stage: test
+  script:
+    # Ensure kubeconfig is available for the cluster
+    - mkdir -p ~/.kube
+    - echo "$KUBECONFIG_FILE" > ~/.kube/config  # Assuming KUBECONFIG_FILE is a GitLab secret
+    
+    # Deploy using Helm into a specific namespace
+    - kubectl create namespace cism || echo "Namespace already exists"  # Create namespace if it doesn't exist
+    - helm install cism-plugin charts/cism-plugin -n cism  # Install Helm chart
+    - kubectl rollout status deployment/cism-plugin -n cism  # Check rollout status to ensure deployment is successful
+  only:
+    - merge_requests
+
+config:
+  stage: config
+  script:
+    - bash scripts/cluster-config-change.sh  # Run the cluster config change script
+  only:
+    - merge_requests
