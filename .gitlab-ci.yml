@@ -7,7 +7,7 @@ stages:
 build:
   stage: build 
   script: 
-    -minikube start
+    - minikube start
 test:
   stage: test
   script:
