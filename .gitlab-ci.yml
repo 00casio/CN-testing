@@ -6,14 +6,11 @@ build:
   stage: build
   script:
     - echo "hello"
-  only:
-    - merge_requests  # Run for merge requests only
+
 
 test:
   stage: test
   script:
     # Ensure kubeconfig is available for the cluster
     - echo "Namespace already exists"  # Create namespace if it doesn't exist
-  only:
-    - merge_requests
 
