@@ -6,6 +6,7 @@ stages:
 test:
   stage: test
   script:
+    - whoami
     # Ensure kubeconfig is available for the cluster
     - echo "Namespace already exists"  # Create namespace if it doesn't exist
 
