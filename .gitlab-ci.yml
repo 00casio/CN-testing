@@ -6,7 +6,7 @@ stages:
 
 build:
   tags:
-    - my-runner
+    - python
   stage: build 
   script: 
     - ls
