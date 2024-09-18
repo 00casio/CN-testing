@@ -20,4 +20,6 @@ test:
     # Ensure kubeconfig is available for the cluster
     - echo "Namespace already exists"  # Create namespace if it doesn't exist
     - ls
+  needs:
+    -  build
   resource_group: cntest
