@@ -2,14 +2,14 @@ stages:
   - build
   - test
 
-
-
 build:
   tags:
     - python
   stage: build 
   script: 
     - ls
+    - sleep 20
+  resource_group: my-group
 test:
   stage: test
   script:
@@ -17,3 +17,4 @@ test:
     # Ensure kubeconfig is available for the cluster
     - echo "Namespace already exists"  # Create namespace if it doesn't exist
     - ls
+  resource_group: my-group
