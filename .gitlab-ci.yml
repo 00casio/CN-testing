@@ -9,7 +9,7 @@ build:
   script: 
     - ls
     - sleep 40
-  resource_group: my-group
+  resource_group: cntest
 test:
   stage: test
   tags:
@@ -20,4 +20,4 @@ test:
     # Ensure kubeconfig is available for the cluster
     - echo "Namespace already exists"  # Create namespace if it doesn't exist
     - ls
-  resource_group: my-group
+  resource_group: cntest
