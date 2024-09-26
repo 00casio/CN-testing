@@ -1,6 +1,5 @@
 stages:
   - build
-  - test
 
 build:
   tags:
@@ -11,7 +10,7 @@ build:
     - sleep 40
   resource_group: cntest
 test:
-  stage: test
+  stage: build
   tags:
     - python 
   script:
